@@ -1,13 +1,9 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 
 ## Loading and preprocessing the data
-```{r}
+
+```r
 #Load data
 activity <- read.csv("activity.csv")
 
@@ -16,14 +12,30 @@ activity$date <- as.Date(activity$date)
 
 # Transform data frame into dplyr package format
 library(dplyr)
-activity <- tbl_df(activity)
+```
 
+```
+## 
+## Attaching package: 'dplyr'
+## 
+## The following objects are masked from 'package:stats':
+## 
+##     filter, lag
+## 
+## The following objects are masked from 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+```
+
+```r
+activity <- tbl_df(activity)
 ```
 
 
 
 ## What is mean total number of steps taken per day?
-```{r}
+
+```r
 # Histogram of the total number of steps taken each day
 steps_byday <- activity %>% 
                 filter(!is.na(steps)) %>% 
@@ -34,18 +46,32 @@ hist(steps_byday$total
      , main = "Total number of steps taken each day"
      , xlab = "Total steps"
      )
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-2-1.png) 
+
+```r
 # Calculate and report the mean and median total number of steps taken per day
 mean(steps_byday$total)
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(steps_byday$total)
+```
+
+```
+## [1] 10765
 ```
 
 
 
 ## What is the average daily activity pattern?
-```{r}
 
-
+```r
 # Plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
 stepstaken5min <- activity %>% 
@@ -63,12 +89,19 @@ with(stepstaken5min,
      , xlab = "5-minute interval"
      )
 )
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
+```r
 # 5-minute interval, on average across all the days in the dataset, that contains the maximum number of steps
 
 maxavg <- stepstaken5min %>% arrange(desc(avg))
 maxavg$interval[1]
+```
 
+```
+## [1] 835
 ```
 
 
@@ -76,15 +109,21 @@ maxavg$interval[1]
 ## Imputing missing values
 
 
-```{r}
+
+```r
 # Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with `NA`s)
 sum(is.na(activity$steps))
 ```
-The total number of missig values in the original activity database is `r sum(is.na(activity$steps))`.
+
+```
+## [1] 2304
+```
+The total number of missig values in the original activity database is 2304.
 
 The selected strategy for filling the missing values in the dataset is to use the mean for that day. If there is no value for the day, the value is filled with the interval mean.
 
-```{r}
+
+```r
 # Create a new dataset that is equal to the original dataset but with the missing data filled in.
 
 activitytidy <- activity
@@ -114,18 +153,33 @@ hist(steps_byday_tidy$total
      , main = "Total number of steps taken each day (NAs estimated)"
      , xlab = "Total steps"
      )
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
+
+```r
 # Calculate and report the mean and median total number of steps taken per day
 mean(steps_byday_tidy$total)
-median(steps_byday_tidy$total)
+```
 
+```
+## [1] 9419.081
+```
+
+```r
+median(steps_byday_tidy$total)
+```
+
+```
+## [1] 10395
 ```
 
 
-The impact of imputing missing data is to underestimte the mean on `r mean(steps_byday$total)-mean(steps_byday_tidy$total)` and the median on `r median(steps_byday$total)-median(steps_byday_tidy$total)`.
+The impact of imputing missing data is to underestimte the mean on 1347.1079493 and the median on 370.
 
 ## Are there differences in activity patterns between weekdays and weekends?
-```{r}
+
+```r
 #Use the dataset with the filled-in missing values for this part.
 # Create a new factor variable in the dataset with two levels -- "weekday" and "weekend" indicating whether a given date is a weekday or weekend day.
 activitytidy$daygroup <- sapply(steps_byday_tidy$date
@@ -146,6 +200,7 @@ xyplot(steps ~ interval | daygroup
        , layout = c(1, 2)
        , xlab = "Interval"
        , ylab = "Number of steps")
-
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
 
